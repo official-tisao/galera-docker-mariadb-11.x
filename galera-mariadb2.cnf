@@ -8,3 +8,7 @@ wsrep_on=ON
 wsrep_provider=/usr/lib/libgalera_smm.so
 wsrep_sst_method=rsync
 
+wsrep_cluster_address = "gcomm://172.18.0.101,172.18.0.102,172.18.0.103"
+wsrep_cluster_name    = "galera-cluster"
+wsrep_node_name       = "mariadb2"
+wsrep_node_address    = "172.18.0.102"

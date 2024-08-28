@@ -1,0 +1,78 @@
+version: "3"
+services: 
+  mariadb1:
+    build: 
+      context: .  
+      dockerfile: Dockerfile  
+    image: galeramariadb:11.1.x
+    container_name: mariadb1
+    ports:
+      - "3306:3306"
+    env_file: .master.env
+    environment:
+      - MARIADB_USER=${MARIADB_USER_1}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD_1}
+      - MARIADB_DATABASE=${MARIADB_DATABASE_1}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    volumes:
+      - ./galera-master-mariadb1.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+    cap_add:
+      - all
+    networks:
+      - mariadb
+      
+  mariadb2:
+   build: 
+      context: .  
+      dockerfile: Dockerfile  
+   image: galeramariadb:11.1.x
+   container_name: mariadb2
+   ports:
+    - "3307:3306"
+   env_file: .env   
+   environment:
+    - MARIADB_USER=${MARIADB_NODE_USER}
+    - MARIADB_PASSWORD=${MARIADB_NODE_PASSWORD}
+    - MARIADB_DATABASE=${MARIADB_NODE_DATABASE}
+    - MARIADB_ROOT_PASSWORD=${MARIADB_NODE_ROOT_PASSWORD}
+   volumes:
+    - ./mariadb2/galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+   cap_add:
+    - all
+   networks:
+    - mariadb
+
+ #mariadb-2
+ mariadb3:
+   image: mariadb:10.5
+   container_name: mariadb3
+   ports:
+    - "3308:3306"
+   env_file: .env
+   volumes:
+    - ./mariadb3/galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+   environment:
+    - MARIADB_USER=${MARIADB_NODE_USER}
+    - MARIADB_PASSWORD=${MARIADB_NODE_PASSWORD}
+    - MARIADB_DATABASE=${MARIADB_NODE_DATABASE}
+    - MARIADB_ROOT_PASSWORD=${MARIADB_NODE_ROOT_PASSWORD}
+   cap_add:
+    - all
+   networks:
+    - mariadb
+
+ proxysql: 
+   image: proxysql/proxysql:latest
+   container_name: proxysql
+   ports:
+    - "6032:6032"
+    - "6070:6070"
+    - "6080:6080"
+   cap_add:
+    - all
+   networks:
+    - mariadb
+
+networks:
+  mariadb:
+     driver: bridge
