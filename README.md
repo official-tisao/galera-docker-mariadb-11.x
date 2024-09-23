@@ -5,7 +5,7 @@ This repository contains a Dockerfile which creates a Docker image for
 MariaDB with Galera Cluster.
 
 The image is build on top of the existing
-[official MariaDB 10.6 image](https://hub.docker.com/_/mariadb/) on
+[official MariaDB 11.1 image](https://hub.docker.com/_/mariadb/) on
 Docker Hub, which is based on Ubuntu 20.04 LTS.
 
 Building the Docker Image
