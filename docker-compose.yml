@@ -7,7 +7,7 @@ services:
     image: galeramariadb:11.1.x
     container_name: mariadb1
     ports:
-      - "3306:3306"
+      - "3311:3306"
     env_file: .master.env
     environment:
       - MARIADB_USER=${MARIADB_USER_1}
@@ -20,7 +20,7 @@ services:
       - all
     networks:
       - mariadb
-      
+
   mariadb2:
    build: 
       context: .  
@@ -28,8 +28,8 @@ services:
    image: galeramariadb:11.1.x
    container_name: mariadb2
    ports:
-    - "3307:3306"
-   env_file: .env   
+    - "3312:3306"
+   env_file: .node.env   
    environment:
     - MARIADB_USER=${MARIADB_NODE_USER}
     - MARIADB_PASSWORD=${MARIADB_NODE_PASSWORD}
@@ -42,13 +42,16 @@ services:
    networks:
     - mariadb
 
- #mariadb-2
- mariadb3:
-   image: mariadb:10.5
+  #mariadb-2
+  mariadb3:
+   build: 
+      context: .  
+      dockerfile: Dockerfile  
+   image: galeramariadb:11.1.x
    container_name: mariadb3
    ports:
-    - "3308:3306"
-   env_file: .env
+    - "3313:3306"
+   env_file: .node.env
    volumes:
     - ./mariadb3/galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
    environment:
@@ -60,18 +63,14 @@ services:
     - all
    networks:
     - mariadb
-
- proxysql: 
-   image: proxysql/proxysql:latest
-   container_name: proxysql
-   ports:
-    - "6032:6032"
-    - "6070:6070"
-    - "6080:6080"
-   cap_add:
-    - all
-   networks:
-    - mariadb
+  haproxy:
+    image: haproxy:latest
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "3307:3307"
+    networks:
+      - galera
 
 networks:
   mariadb:
